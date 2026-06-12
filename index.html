@@ -3,120 +3,815 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hoja de Vida - Rodolfo</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Rodolfo Cárcamo — Technical Lead & Senior Java Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens ─────────────────────────────────────────── */
+    :root {
+      --bg:        #0A0C10;
+      --surface:   #0F1218;
+      --border:    #1C2030;
+      --muted:     #3A4055;
+      --subtle:    #6B7590;
+      --body:      #B8C0D4;
+      --heading:   #E8EDF5;
+      --accent:    #4F8EF7;      /* electric blue */
+      --accent2:   #7C5CFC;      /* violet — used sparingly */
+      --tag-bg:    #131826;
+      --font-sans: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius:    6px;
+      --max:       960px;
+      --transition: 180ms ease;
+    }
+
+    /* ── Reset ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ul { list-style: none; }
+
+    /* ── Layout helpers ─────────────────────────────────── */
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+    .section    { padding: 96px 0; }
+    .section + .section { border-top: 1px solid var(--border); }
+    .label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 48px;
+      letter-spacing: -.02em;
+    }
+
+    /* ── Nav ────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,16,.88);
+      backdrop-filter: blur(14px);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; max-width: var(--max); margin: 0 auto; padding: 0 28px;
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--heading);
+      letter-spacing: .02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--subtle);
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--heading); }
+    .nav-cta {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--body);
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .nav-cta:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    #hero {
+      padding: 168px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Signature element: animated grid of dots in background */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: .5;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 0%, black 30%, transparent 100%);
+    }
+    #hero::after {
+      content: '';
+      position: absolute;
+      top: -120px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(79,142,247,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      border: 1px solid rgba(79,142,247,.25);
+      border-radius: 40px;
+      padding: 5px 14px;
+      margin-bottom: 32px;
+      letter-spacing: .08em;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block; width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .4; transform: scale(.7); }
+    }
+    .hero-name {
+      font-size: clamp(38px, 6vw, 68px);
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -.04em;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+    .hero-role {
+      font-size: clamp(16px, 2.2vw, 22px);
+      font-weight: 300;
+      color: var(--subtle);
+      margin-bottom: 28px;
+      letter-spacing: -.01em;
+    }
+    .hero-role strong { color: var(--body); font-weight: 500; }
+    .hero-desc {
+      max-width: 540px;
+      font-size: 16px;
+      color: var(--body);
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      transition: opacity var(--transition), transform var(--transition);
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border);
+      color: var(--body);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--heading); }
+    .hero-stats {
+      display: flex; gap: 36px; flex-wrap: wrap;
+      margin-top: 60px;
+      padding-top: 44px;
+      border-top: 1px solid var(--border);
+    }
+    .stat-item .stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -.03em;
+    }
+    .stat-item .stat-num span { color: var(--accent); }
+    .stat-item .stat-desc {
+      font-size: 12px;
+      color: var(--subtle);
+      margin-top: 2px;
+    }
+
+    /* ── Stack ──────────────────────────────────────────── */
+    #stack .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+    }
+    .stack-chip {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--body);
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .stack-chip:hover { border-color: var(--accent); color: var(--heading); }
+    .stack-dot {
+      width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-java    { background: #f89820; }
+    .dot-cloud   { background: #FF9900; }
+    .dot-k8s     { background: #326CE5; }
+    .dot-obs     { background: #E6522C; }
+    .dot-arch    { background: var(--accent); }
+    .dot-ai      { background: var(--accent2); }
+    .dot-devops  { background: #5BCC5B; }
+    .dot-db      { background: #00758F; }
+    .dot-msg     { background: #FF4F00; }
+
+    /* ── Services ───────────────────────────────────────── */
+    #services .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .service-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .service-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: rgba(79,142,247,.1);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+    .service-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 10px;
+    }
+    .service-card p {
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.6;
+    }
+
+    /* ── Projects ───────────────────────────────────────── */
+    #projects .projects-list { display: flex; flex-direction: column; gap: 16px; }
+    .project-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      transition: border-color var(--transition);
+    }
+    .project-row:hover { border-color: var(--muted); }
+    .project-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .project-row h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 8px;
+    }
+    .project-row p {
+      font-size: 13px;
+      color: var(--subtle);
+      max-width: 580px;
+      line-height: 1.6;
+    }
+    .project-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--subtle);
+    }
+    .project-meta {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .project-meta .status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #5BCC5B;
+    }
+    .project-meta .status::before {
+      content: '';
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #5BCC5B;
+    }
+
+    /* ── Experience ─────────────────────────────────────── */
+    #experience .exp-list { display: flex; flex-direction: column; gap: 0; }
+    .exp-item {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 32px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .exp-item:last-child { border-bottom: none; }
+    .exp-date {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--subtle);
+      padding-top: 4px;
+      line-height: 1.5;
+    }
+    .exp-date strong { display: block; color: var(--body); font-weight: 500; font-size: 12px; }
+    .exp-content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--heading);
+      margin-bottom: 4px;
+    }
+    .exp-company {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+    }
+    .exp-content p {
+      font-size: 13px;
+      color: var(--subtle);
+      line-height: 1.65;
+    }
+    .exp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+
+    /* ── Contact ────────────────────────────────────────── */
+    #contact {
+      padding: 96px 0;
+      text-align: center;
+    }
+    #contact .section-title { margin-bottom: 16px; }
+    #contact .contact-sub {
+      color: var(--subtle);
+      font-size: 15px;
+      max-width: 420px;
+      margin: 0 auto 40px;
+    }
+    .contact-links {
+      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px;
+      text-align: center;
+    }
+    footer p {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    footer span { color: var(--accent); }
+
+    /* ── Reveal animation ───────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .exp-item  { grid-template-columns: 1fr; gap: 6px; }
+      .project-row { grid-template-columns: 1fr; }
+      .project-meta { text-align: left; }
+      .hero-stats { gap: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .btn-primary, .service-card { transition: none; }
+      #hero::before { animation: none; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Rodolfo Roque Cárcamo Mesa</h1>
-      <p>Ingeniero de Sistemas | Desarrollador Java</p>
-      <p><a href="mailto:carcamomesa@gmail.com">carcamomesa@gmail.com</a> | GitHub: <a href="https://github.com/roquecarcamo" target="_blank">roquecarcamo</a></p>
-    </header>
 
-<section>
-  <h2>Perfil Profesional</h2>
-  <p>
-    Ingeniero de Sistemas con sólida experiencia en desarrollo backend utilizando Java (8+, 17 y 21), Spring Boot y tecnologías empresariales como Java EE y JSF. 
-    Experto en el diseño e implementación de servicios web (SOAP y REST), así como en la integración de bases de datos relacionales (PostgreSQL, Oracle, MySQL).
-  </p>
-  <p>
-    Profesional orientado a resultados, adaptable y con visión de futuro, comprometido con la mejora continua y la entrega de soluciones robustas y escalables.
-  </p>
-</section>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <span class="nav-logo">rodolfo<span>.</span>dev</span>
+      <div class="nav-links">
+        <a href="#services">Servicios</a>
+        <a href="#stack">Stack</a>
+        <a href="#projects">Proyectos</a>
+        <a href="#experience">Experiencia</a>
+        <a href="#education">Educación</a>
+        <a href="#contact">Contacto</a>
+      </div>
+      <a class="nav-cta" href="#contact">Hablemos →</a>
+    </div>
+  </nav>
 
-<section>
-  <h2>Experiencia Laboral</h2>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container hero-inner">
+      <div class="hero-eyebrow">Disponible para proyectos</div>
+      <h1 class="hero-name">Rodolfo Cárcamo</h1>
+      <p class="hero-role"><strong>Technical Lead</strong> · Senior Java Engineer · Montería, Colombia</p>
+      <p class="hero-desc">
+        Ingeniero de Sistemas con más de 10 años de experiencia en desarrollo backend y liderazgo técnico.
+        Especialista en Java (8–21), Spring Boot y arquitecturas de microservicios. Lidero equipos remotos,
+        diseño soluciones escalables y alineo decisiones técnicas con objetivos de negocio en entornos empresariales.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#contact">Contactar</a>
+        <a class="btn-ghost" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">100<span>+</span></div>
+          <div class="stat-desc">Microservicios en producción</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">10<span>+</span></div>
+          <div class="stat-desc">Años de experiencia</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">Conexia</div>
+          <div class="stat-desc">Technical Lead actual</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">AI<span>‑Driven</span></div>
+          <div class="stat-desc">Tooling & automación</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h3>Technical Lead, 04/2025 – Actualidad</h3>
-  <p><strong>Conexia – Remote</strong></p>
-  <ul>
-    <li>Liderar procesos de investigación técnica y capacitación interna (ej. OWASP).</li>
-    <li>Alinear objetivos técnicos con la estrategia de negocio.</li>
-    <li>Gestionar personas y promover un entorno de alto rendimiento.</li>
-    <li>Colaborar con el área de calidad para mejorar procesos y estándares.</li>
-    <li>Evaluar tecnologías para proyectos, elaborando criterios e informes técnicos.</li>
-    <li>Facilitar comunicación entre equipos técnicos y comerciales.</li>
-    <li>Gestionar tareas técnicas y administrativas del proyecto.</li>
-    <li>Asumir responsabilidades adicionales según necesidades del área.</li>
-    <li>Promover cumplimiento del Sistema de Gestión Integrado (SGC, SGSI, SGSST).</li>
-  </ul>
+  <!-- SERVICES -->
+  <section id="services" class="section">
+    <div class="container">
+      <p class="label reveal">Lo que hago</p>
+      <h2 class="section-title reveal">Servicios</h2>
+      <div class="services-grid">
 
-  <h3>Java Developer Senior Advanced, 11/2018 – 04/2025</h3>
-  <p><strong>Conexia SAS – Remote</strong></p>
-  <ul>
-    <li>Diseño y desarrollo de soluciones Java robustas y escalables.</li>
-    <li>Orientación técnica al equipo, buenas prácticas y revisión de código.</li>
-    <li>Colaboración con QA, DevOps y otras áreas para éxito del proyecto.</li>
-    <li>Relevamiento y documentación funcional y técnica.</li>
-    <li>Gestión de requerimientos con stakeholders usando Jira.</li>
-    <li>Aplicación de metodologías ágiles: Scrum y Kanban.</li>
-    <li>Validación técnica de requerimientos y seguridad OWASP.</li>
-    <li>Interacción con Gestión de Servicios del Usuario (GSU).</li>
-    <li>Cumplimiento de políticas del Sistema de Gestión Integrado.</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">🏗️</div>
+          <h3>Arquitectura de Microservicios</h3>
+          <p>Diseño de plataformas escalables con Java y Spring Boot. Servicios REST y SOAP, JPA/Hibernate, integración con PostgreSQL, Oracle y MySQL.</p>
+        </div>
 
-  <h3>Ingeniero de Desarrollo, 01/2014 – 01/2018</h3>
-  <p><strong>SOLINCES SAS</strong></p>
-  <ul>
-    <li>Desarrollo web con Java J2EE y JSF aplicando diseño limpio.</li>
-    <li>Diseño y optimización de bases de datos Oracle.</li>
-    <li>Implementación de funcionalidades en plataforma escolar.</li>
-    <li>Desarrollo con arquitectura de microservicios.</li>
-    <li>Soporte técnico y mantenimiento correctivo y evolutivo.</li>
-    <li>Documentación técnica de despliegue y operación.</li>
-  </ul>
-</section>
+        <div class="service-card reveal">
+          <div class="service-icon">👨‍💻</div>
+          <h3>Technical Lead</h3>
+          <p>Coordinación de equipos técnicos remotos, alineación de la visión tecnológica con objetivos estratégicos y definición de criterios para selección de tecnologías y frameworks.</p>
+        </div>
 
-<section>
-  <h2>Habilidades</h2>
-  <h4>Lenguajes de Programación</h4>
-  <ul>
-    <li>Java (8+, 17, 21), Java EE, Java Server Faces (JSF), JavaScript</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">🔍</div>
+          <h3>Code Review & Estándares</h3>
+          <p>Revisión de código, definición de estándares de desarrollo, gestión de requerimientos técnicos y funcionales por release, y aplicación de buenas prácticas de calidad con SonarQube.</p>
+        </div>
 
-  <h4>Pruebas y Calidad de Código</h4>
-  <ul>
-    <li>Mockito, SonarQube</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">🔒</div>
+          <h3>Seguridad OWASP</h3>
+          <p>Aplicación de prácticas OWASP en aplicaciones productivas, hardening de endpoints REST/SOAP, remediación de vulnerabilidades y auditorías de seguridad en entornos empresariales.</p>
+        </div>
 
-  <h4>Desarrollo de Servicios</h4>
-  <ul>
-    <li>SOAP, REST, Microservicios</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">⚙️</div>
+          <h3>CI/CD & DevOps</h3>
+          <p>Pipelines de integración y entrega continua, gestión de releases con Git, Docker y Maven. Estrategias de despliegue seguras y reproducibles en entornos enterprise.</p>
+        </div>
 
-  <h4>Frameworks y Librerías</h4>
-  <ul>
-    <li>Spring Boot, JPA / Hibernate, Angular</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">🤝</div>
+          <h3>Trabajo Transversal</h3>
+          <p>Colaboración con equipos de QA, Comercial y Soporte para alinear la entrega técnica con las necesidades del negocio. Gestión de expectativas y comunicación entre áreas.</p>
+        </div>
 
-  <h4>Bases de Datos</h4>
-  <ul>
-    <li>PostgreSQL, MySQL, Oracle</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">🗄️</div>
+          <h3>Bases de Datos & Integración</h3>
+          <p>Diseño y optimización de bases de datos PostgreSQL, Oracle y MySQL. Integración de sistemas mediante servicios REST y SOAP con JPA e Hibernate.</p>
+        </div>
 
-  <h4>Herramientas de Desarrollo</h4>
-  <ul>
-    <li>Git, Maven, Docker</li>
-  </ul>
+        <div class="service-card reveal">
+          <div class="service-icon">📄</div>
+          <h3>Documentación Técnica</h3>
+          <p>Generación de documentación técnica y funcional, especificaciones de servicios, manuales de estándares y soporte técnico a equipos de desarrollo y operaciones.</p>
+        </div>
 
-  <h4>Gestión y Metodologías Ágiles</h4>
-  <ul>
-    <li>Jira, Scrum, Kanban</li>
-  </ul>
-</section>
+        <div class="service-card reveal">
+          <div class="service-icon">🌐</div>
+          <h3>Inglés Profesional</h3>
+          <p>Professional Working Proficiency (ILA Canada, Toronto). Capacidad de trabajo en equipos internacionales, revisión de documentación técnica y comunicación con stakeholders globales.</p>
+        </div>
 
-<section>
-  <h2>Educación</h2>
-  <ul>
-    <li><strong>Especialización en Ingeniería del Software</strong> – Universidad del Norte, Barranquilla (01/2018)</li>
-    <li><strong>Ingeniero de Sistemas</strong> – Fundación Universidad Tecnológica Comfenalco, Cartagena (01/2014 – 01/2018)</li>
-  </ul>
-</section>
+      </div>
+    </div>
+  </section>
 
-    <footer>
-      <p>© 2025 Rodo. Diseñado con ❤️ para brillar en GitHub Pages.</p>
-    </footer>
-  </div>
+  <!-- STACK -->
+  <section id="stack" class="section">
+    <div class="container">
+      <p class="label reveal">Tecnologías</p>
+      <h2 class="section-title reveal">Stack</h2>
+      <div class="stack-grid reveal">
+        <!-- Java & Backend -->
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>Java 8–21</div>
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>Spring Boot</div>
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>JPA</div>
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>Hibernate</div>
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>Mockito</div>
+        <div class="stack-chip"><span class="stack-dot dot-java"></span>Maven</div>
+        <!-- APIs -->
+        <div class="stack-chip"><span class="stack-dot dot-arch"></span>REST</div>
+        <div class="stack-chip"><span class="stack-dot dot-arch"></span>SOAP</div>
+        <div class="stack-chip"><span class="stack-dot dot-arch"></span>Microservicios</div>
+        <div class="stack-chip"><span class="stack-dot dot-arch"></span>OWASP</div>
+        <!-- Bases de Datos -->
+        <div class="stack-chip"><span class="stack-dot dot-db"></span>PostgreSQL</div>
+        <div class="stack-chip"><span class="stack-dot dot-db"></span>Oracle</div>
+        <div class="stack-chip"><span class="stack-dot dot-db"></span>MySQL</div>
+        <!-- DevOps -->
+        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Docker</div>
+        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Git</div>
+        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Jira</div>
+        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Scrum</div>
+        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Kanban</div>
+        <!-- Calidad -->
+        <div class="stack-chip"><span class="stack-dot dot-obs"></span>SonarQube</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section">
+    <div class="container">
+      <p class="label reveal">Trabajo destacado</p>
+      <h2 class="section-title reveal">Proyectos</h2>
+      <div class="projects-list">
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">Migración · Arquitectura</p>
+            <h3>Positiva Integración Suite → Multimodule</h3>
+            <p>Migración de monolito Java a arquitectura Maven multimodule con Strangler Fig en dos fases. Dominios ARL, AP, SALUD y REEMBOLSOS desacoplados en servicios independientes con pipelines CI/CD dedicados.</p>
+            <div class="project-badges">
+              <span class="badge">Spring Boot</span><span class="badge">Maven Multimodule</span>
+              <span class="badge">Strangler Fig</span><span class="badge">Kubernetes</span><span class="badge">Jib</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">En curso</span></div>
+        </div>
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">Monitoreo · Transferencias</p>
+            <h3>cuida-transfers-monitor</h3>
+            <p>Microservicio Spring Boot para monitoreo de historial de transferencias en integraciones SIARP, Suite Conexia, Documental, Correo Certificado y Facturas. Con dashboards Metabase y alertas Google Chat.</p>
+            <div class="project-badges">
+              <span class="badge">Spring Boot</span><span class="badge">Metabase</span>
+              <span class="badge">Google Chat Cards v2</span><span class="badge">PostgreSQL</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">Producción</span></div>
+        </div>
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">AI · Análisis</p>
+            <h3>cuida-transfer-analyzer (MCP Server)</h3>
+            <p>Servidor MCP con seis herramientas para análisis de errores de transferencias SIARP usando Spring AI e inferencia local Ollama. Diseñado para privacidad de datos sin enviar información a APIs externas.</p>
+            <div class="project-badges">
+              <span class="badge">Spring AI</span><span class="badge">MCP Protocol</span>
+              <span class="badge">Ollama</span><span class="badge">SIARP</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">Producción</span></div>
+        </div>
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">Observabilidad · ELK</p>
+            <h3>cuida-elk-112</h3>
+            <p>Pipeline paralelo de extracción y clasificación de logs ELK para 112 microservicios con checkpoint/resume, reporte HTML interactivo e integración Windsurf. Reduce a horas un proceso manual de días.</p>
+            <div class="project-badges">
+              <span class="badge">Elasticsearch</span><span class="badge">Python</span>
+              <span class="badge">HTML Report</span><span class="badge">Windsurf</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">Producción</span></div>
+        </div>
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">DevOps · Releases</p>
+            <h3>cuida-kiro-release</h3>
+            <p>Proyecto Kiro con MCP servers (Atlassian, Bitbucket), cuatro steering files, hooks con aprobación requerida y clasificación de riesgo BAJO/MEDIO/ALTO/CRÍTICO vinculada a etiquetas Jira.</p>
+            <div class="project-badges">
+              <span class="badge">Kiro IDE</span><span class="badge">MCP Servers</span>
+              <span class="badge">Jira</span><span class="badge">Bitbucket</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">Producción</span></div>
+        </div>
+
+        <div class="project-row reveal">
+          <div>
+            <p class="project-tag">SLA · Kubernetes</p>
+            <h3>sla-monitor</h3>
+            <p>Servicio Spring Boot con descubrimiento dinámico de servicios Kubernetes, monitoreo PostgreSQL/Sybase y alertas Elasticsearch. OKR Q1: 100% SLA con MTTA menor a 60 minutos.</p>
+            <div class="project-badges">
+              <span class="badge">Spring Boot</span><span class="badge">K8s Discovery</span>
+              <span class="badge">Elasticsearch</span><span class="badge">Sybase</span>
+            </div>
+          </div>
+          <div class="project-meta"><span class="status">Producción</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="section">
+    <div class="container">
+      <p class="label reveal">Trayectoria</p>
+      <h2 class="section-title reveal">Experiencia</h2>
+      <div class="exp-list">
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            <strong>Actual</strong>
+            Abr 2025 — Presente
+          </div>
+          <div class="exp-content">
+            <h3>Technical Lead</h3>
+            <p class="exp-company">Conexia S.A.S — Remoto</p>
+            <p>Liderazgo de la arquitectura backend con Java y Spring Boot. Coordinación de equipos técnicos alineando la visión tecnológica con objetivos estratégicos. Definición de criterios para selección de tecnologías, impulso de prácticas OWASP y trabajo transversal con QA, Comercial y Soporte.</p>
+            <div class="exp-tags">
+              <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">OWASP</span>
+              <span class="badge">Tech Lead</span><span class="badge">Remoto</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            Nov 2018 — Abr 2025
+          </div>
+          <div class="exp-content">
+            <h3>Senior Java Developer</h3>
+            <p class="exp-company">Conexia S.A.S — Remoto</p>
+            <p>Diseño e implementación de servicios REST y SOAP con Java y Spring Boot. Liderazgo técnico, revisión de código y definición de estándares. Gestión de requerimientos técnicos y funcionales por release, integración con PostgreSQL, Oracle y MySQL, y aplicación de prácticas OWASP en producción.</p>
+            <div class="exp-tags">
+              <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">REST</span>
+              <span class="badge">SOAP</span><span class="badge">PostgreSQL</span><span class="badge">Oracle</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            Ene 2014 — Ene 2018
+          </div>
+          <div class="exp-content">
+            <h3>Ingeniero de Desarrollo</h3>
+            <p class="exp-company">Solinces S.A.S</p>
+            <p>Desarrollo de aplicaciones Java J2EE y JSF. Diseño y optimización de bases de datos Oracle. Soporte, mantenimiento y documentación técnica de sistemas empresariales.</p>
+            <div class="exp-tags">
+              <span class="badge">Java J2EE</span><span class="badge">JSF</span>
+              <span class="badge">Oracle</span><span class="badge">Documentación</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="section">
+    <div class="container">
+      <p class="label reveal">Formación</p>
+      <h2 class="section-title reveal">Educación & Idiomas</h2>
+      <div class="exp-list">
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            <strong>Posgrado</strong>
+          </div>
+          <div class="exp-content">
+            <h3>Especialización en Ingeniería del Software</h3>
+            <p class="exp-company">Universidad del Norte</p>
+          </div>
+        </div>
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            <strong>Pregrado</strong>
+          </div>
+          <div class="exp-content">
+            <h3>Ingeniero de Sistemas</h3>
+            <p class="exp-company">Fundación Universidad Tecnológica Comfenalco</p>
+          </div>
+        </div>
+
+        <div class="exp-item reveal">
+          <div class="exp-date">
+            <strong>Internacional</strong>
+          </div>
+          <div class="exp-content">
+            <h3>Intensive General English Course</h3>
+            <p class="exp-company">ILA Canada — Toronto</p>
+            <p style="margin-top:10px; font-size:13px;">
+              <span style="color:var(--body); font-weight:500;">Español:</span>
+              <span style="color:var(--subtle);"> Nativo</span>
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              <span style="color:var(--body); font-weight:500;">Inglés:</span>
+              <span style="color:var(--subtle);"> Professional Working Proficiency</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container">
+      <p class="label reveal" style="text-align:center;">Contacto</p>
+      <h2 class="section-title reveal">¿Trabajamos juntos?</h2>
+      <p class="contact-sub reveal">
+        Disponible para consultoría, arquitectura de plataformas, liderazgo técnico y automatización con IA.
+      </p>
+      <div class="contact-links reveal">
+        <a class="btn-primary" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">
+          LinkedIn ↗
+        </a>
+        <a class="btn-ghost" href="mailto:contacto@rodolfocarcamo.dev">
+          Enviar email
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 <span>Rodolfo Roque Cárcamo Mesa</span> · Technical Lead & Senior Java Engineer · Montería, Colombia</p>
+  </footer>
+
+  <!-- Reveal on scroll -->
+  <script>
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 60);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
 </body>
 </html>
