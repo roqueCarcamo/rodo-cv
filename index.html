@@ -247,6 +247,17 @@
       transition: border-color var(--t), color var(--t);
     }
     .btn-ghost:hover { border-color: var(--accent); color: var(--heading); }
+    .btn-pdf {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid rgba(34,197,94,.35);
+      background: rgba(34,197,94,.08);
+      color: #22C55E; font-size: 13px; font-weight: 600;
+      padding: 11px 22px; border-radius: var(--r);
+      cursor: pointer; font-family: var(--font-sans);
+      transition: background var(--t), border-color var(--t), transform var(--t);
+    }
+    .btn-pdf:hover { background: rgba(34,197,94,.16); border-color: #22C55E; transform: translateY(-1px); }
+    .btn-pdf:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
     /* ── Services ───────────────────────────────────────── */
     .services-grid {
@@ -620,6 +631,10 @@
         <div class="hero-btns">
           <a class="btn-primary" href="#contact">Contactar</a>
           <a class="btn-ghost" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <button class="btn-pdf" id="btn-pdf" onclick="generarCV()">
+            <span id="pdf-icon">⬇</span>
+            <span id="pdf-label">Descargar CV</span>
+          </button>
         </div>
         <div class="hero-stats">
           <div>
@@ -1050,8 +1065,9 @@
   <p>© 2026 <em>Rodolfo Roque Cárcamo Mesa</em> · Technical Lead & Senior Java Engineer · Montería, Colombia</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  /* Reveal on scroll */
+  /* ── Reveal on scroll ───────────────────────────────── */
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
@@ -1062,20 +1078,327 @@
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* Contact form — abre mailto como fallback */
+  /* ── Contact form ───────────────────────────────────── */
   function sendForm() {
     const name  = document.getElementById('f-name').value.trim();
     const email = document.getElementById('f-email').value.trim();
     const msg   = document.getElementById('f-msg').value.trim();
-    if (!name || !email || !msg) {
-      alert('Por favor completa todos los campos.');
-      return;
-    }
+    if (!name || !email || !msg) { alert('Por favor completa todos los campos.'); return; }
     const mailto = `mailto:tu@email.com?subject=Contacto desde portafolio — ${encodeURIComponent(name)}&body=${encodeURIComponent(msg + '\n\nDe: ' + name + '\nEmail: ' + email)}`;
     window.location.href = mailto;
     const toast = document.getElementById('toast');
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  /* ── Generar CV en PDF ──────────────────────────────── */
+  function generarCV() {
+    const btn   = document.getElementById('btn-pdf');
+    const label = document.getElementById('pdf-label');
+    const icon  = document.getElementById('pdf-icon');
+    btn.disabled = true;
+    label.textContent = 'Generando...';
+    icon.textContent  = '⏳';
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    // ── Constantes de diseño ──────────────────────────
+    const W    = 210;          // ancho A4
+    const ML   = 18;           // margen izquierdo
+    const MR   = 18;           // margen derecho
+    const CW   = W - ML - MR;  // ancho de contenido
+    const BLUE = [59, 130, 246];
+    const DARK = [16, 24, 40];
+    const GRAY = [90, 105, 135];
+    const LGRAY= [200, 210, 225];
+    const WHT  = [255, 255, 255];
+    const GRN  = [34, 197, 94];
+
+    let y = 0; // cursor vertical
+
+    // ── Helpers ───────────────────────────────────────
+    const newPage = () => {
+      doc.addPage();
+      y = 16;
+      // Línea superior decorativa
+      doc.setFillColor(...BLUE);
+      doc.rect(0, 0, W, 2, 'F');
+    };
+    const checkPage = (needed = 16) => { if (y + needed > 275) newPage(); };
+
+    const setFont = (style = 'normal', size = 10, color = DARK) => {
+      doc.setFont('helvetica', style);
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+    };
+
+    const text = (str, x, yy, opts = {}) => doc.text(str, x, yy, opts);
+
+    const hline = (yy, color = LGRAY, lw = 0.3) => {
+      doc.setDrawColor(...color);
+      doc.setLineWidth(lw);
+      doc.line(ML, yy, W - MR, yy);
+    };
+
+    const sectionTitle = (title) => {
+      checkPage(20);
+      y += 6;
+      doc.setFillColor(...BLUE);
+      doc.rect(ML, y, 3, 4.5, 'F');
+      setFont('bold', 11, BLUE);
+      text(title, ML + 6, y + 3.5);
+      y += 9;
+      hline(y, LGRAY, 0.25);
+      y += 5;
+    };
+
+    const chip = (label, x, yy) => {
+      const tw = doc.getTextWidth(label) + 6;
+      doc.setFillColor(230, 238, 255);
+      doc.roundedRect(x, yy - 3.5, tw, 5.5, 1, 1, 'F');
+      doc.setFillColor(...BLUE);
+      doc.setTextColor(...BLUE);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'normal');
+      text(label, x + 3, yy + 0.3);
+      return tw + 3;
+    };
+
+    const chipsRow = (items, indent = ML) => {
+      let cx = indent;
+      items.forEach(item => {
+        const tw = doc.getTextWidth(item) + 6;
+        if (cx + tw > W - MR) { y += 7; cx = indent; }
+        chip(item, cx, y);
+        cx += tw + 3;
+      });
+      y += 7;
+    };
+
+    // ════════════════════════════════════════════════
+    // HEADER — Fondo azul degradado simulado
+    // ════════════════════════════════════════════════
+    doc.setFillColor(...BLUE);
+    doc.rect(0, 0, W, 52, 'F');
+
+    // Acento decorativo esquina
+    doc.setFillColor(99, 102, 241); // indigo
+    doc.circle(W - 5, -5, 30, 'F');
+
+    // Nombre
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(...WHT);
+    text('Rodolfo Roque Cárcamo Mesa', ML, 20);
+
+    // Rol
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(180, 210, 255);
+    text('Technical Lead  ·  Senior Java Engineer', ML, 29);
+
+    // Ubicación e idioma
+    doc.setFontSize(8.5);
+    doc.setTextColor(140, 175, 230);
+    text('📍 Montería, Colombia   •   LinkedIn: linkedin.com/in/rodolfo-carcamo   •   🌐 ES / EN', ML, 37);
+
+    // Línea decorativa inferior del header
+    doc.setFillColor(99, 102, 241);
+    doc.rect(0, 50, W, 2, 'F');
+
+    y = 58;
+
+    // ════════════════════════════════════════════════
+    // PERFIL PROFESIONAL
+    // ════════════════════════════════════════════════
+    sectionTitle('PERFIL PROFESIONAL');
+    setFont('normal', 9.5, DARK);
+    const perfil = doc.splitTextToSize(
+      'Ingeniero de Sistemas con más de 10 años de experiencia en desarrollo backend y liderazgo técnico. Especialista en Java (8–21), Spring Boot y arquitecturas de microservicios. Experiencia liderando equipos remotos, diseñando soluciones escalables y alineando decisiones técnicas con objetivos de negocio en entornos empresariales. Comunicación profesional en español e inglés.',
+      CW
+    );
+    doc.text(perfil, ML, y);
+    y += perfil.length * 5 + 4;
+
+    // ════════════════════════════════════════════════
+    // EXPERIENCIA PROFESIONAL
+    // ════════════════════════════════════════════════
+    sectionTitle('EXPERIENCIA PROFESIONAL');
+
+    const jobs = [
+      {
+        title: 'Technical Lead',
+        company: 'Conexia S.A.S — Remoto',
+        period: 'Abril 2025 – Actualidad',
+        bullets: [
+          'Lidero la arquitectura backend basada en Java y Spring Boot.',
+          'Coordino equipos técnicos alineando visión tecnológica con objetivos estratégicos.',
+          'Defino criterios técnicos para selección de tecnologías y frameworks.',
+          'Impulso buenas prácticas de seguridad (OWASP) y calidad de código con SonarQube.',
+          'Trabajo transversal con QA, Comercial y áreas de soporte.',
+        ],
+        tags: ['Java', 'Spring Boot', 'OWASP', 'Tech Lead', 'Remoto'],
+      },
+      {
+        title: 'Senior Java Developer',
+        company: 'Conexia S.A.S — Remoto',
+        period: 'Noviembre 2018 – Abril 2025  (6 años 5 meses)',
+        bullets: [
+          'Diseño e implementación de servicios REST y SOAP con Java y Spring Boot.',
+          'Liderazgo técnico, revisión de código y definición de estándares de desarrollo.',
+          'Gestión de requerimientos técnicos y funcionales por release.',
+          'Integración con bases de datos PostgreSQL, Oracle y MySQL.',
+          'Aplicación de prácticas OWASP en aplicaciones productivas.',
+        ],
+        tags: ['Java', 'Spring Boot', 'REST', 'SOAP', 'PostgreSQL', 'Oracle', 'MySQL'],
+      },
+      {
+        title: 'Ingeniero de Desarrollo',
+        company: 'Solinces S.A.S',
+        period: 'Enero 2014 – Enero 2018  (4 años)',
+        bullets: [
+          'Desarrollo de aplicaciones Java J2EE y JSF.',
+          'Diseño y optimización de bases de datos Oracle.',
+          'Soporte, mantenimiento y documentación técnica.',
+        ],
+        tags: ['Java J2EE', 'JSF', 'Oracle'],
+      },
+    ];
+
+    jobs.forEach(job => {
+      checkPage(42);
+
+      // Título del puesto
+      setFont('bold', 10.5, DARK);
+      text(job.title, ML, y);
+
+      // Periodo alineado a la derecha
+      setFont('normal', 8.5, GRAY);
+      doc.text(job.period, W - MR, y, { align: 'right' });
+      y += 5;
+
+      // Empresa
+      setFont('bold', 9, BLUE);
+      text(job.company, ML, y);
+      y += 5;
+
+      // Bullets
+      job.bullets.forEach(b => {
+        checkPage(7);
+        setFont('normal', 9, DARK);
+        doc.setFillColor(...BLUE);
+        doc.circle(ML + 1.5, y - 1, 0.9, 'F');
+        const lines = doc.splitTextToSize(b, CW - 8);
+        doc.text(lines, ML + 5, y);
+        y += lines.length * 4.8;
+      });
+
+      // Chips de tecnologías
+      y += 2;
+      checkPage(10);
+      chipsRow(job.tags, ML);
+      y += 4;
+      hline(y, [230, 235, 245], 0.2);
+      y += 6;
+    });
+
+    // ════════════════════════════════════════════════
+    // HABILIDADES TÉCNICAS
+    // ════════════════════════════════════════════════
+    checkPage(60);
+    sectionTitle('HABILIDADES TÉCNICAS');
+
+    const skillGroups = [
+      { label: 'Backend & Frameworks', items: ['Java 8', 'Java 11', 'Java 17', 'Java 21', 'Spring Boot', 'JPA', 'Hibernate', 'J2EE', 'JSF', 'Maven'] },
+      { label: 'APIs & Arquitectura',  items: ['REST', 'SOAP', 'Microservicios', 'OWASP'] },
+      { label: 'Bases de Datos',       items: ['PostgreSQL', 'Oracle', 'MySQL'] },
+      { label: 'DevOps & Herramientas',items: ['Docker', 'Git', 'Jira', 'Scrum', 'Kanban'] },
+      { label: 'Calidad & Testing',    items: ['SonarQube', 'Mockito'] },
+    ];
+
+    skillGroups.forEach(grp => {
+      checkPage(16);
+      setFont('bold', 8.5, GRAY);
+      text(grp.label.toUpperCase(), ML, y);
+      y += 5;
+      chipsRow(grp.items, ML);
+      y += 2;
+    });
+
+    // ════════════════════════════════════════════════
+    // EDUCACIÓN
+    // ════════════════════════════════════════════════
+    checkPage(50);
+    sectionTitle('EDUCACIÓN');
+
+    const edu = [
+      { degree: 'Especialización en Ingeniería del Software', institution: 'Universidad del Norte', type: 'Posgrado' },
+      { degree: 'Ingeniero de Sistemas', institution: 'Fundación Universidad Tecnológica Comfenalco', type: 'Pregrado' },
+      { degree: 'Intensive General English Course', institution: 'ILA Canada — Toronto', type: 'Internacional' },
+    ];
+
+    edu.forEach(e => {
+      checkPage(16);
+      setFont('bold', 9.5, DARK);
+      text(e.degree, ML, y);
+      setFont('normal', 8.5, GRAY);
+      doc.text(e.type, W - MR, y, { align: 'right' });
+      y += 5;
+      setFont('normal', 9, BLUE);
+      text(e.institution, ML, y);
+      y += 8;
+    });
+
+    // ════════════════════════════════════════════════
+    // IDIOMAS
+    // ════════════════════════════════════════════════
+    checkPage(24);
+    sectionTitle('IDIOMAS');
+
+    const langs = [
+      { lang: 'Español', level: 'Nativo', pct: 100 },
+      { lang: 'Inglés',  level: 'Professional Working Proficiency', pct: 72 },
+    ];
+
+    langs.forEach(l => {
+      checkPage(14);
+      setFont('bold', 9.5, DARK);
+      text(l.lang, ML, y);
+      setFont('normal', 8.5, GRAY);
+      text(l.level, ML + 22, y);
+      y += 4;
+
+      // Barra de nivel
+      const barW = 80;
+      doc.setFillColor(...LGRAY);
+      doc.roundedRect(ML, y, barW, 3, 1, 1, 'F');
+      doc.setFillColor(...BLUE);
+      doc.roundedRect(ML, y, barW * l.pct / 100, 3, 1, 1, 'F');
+      y += 8;
+    });
+
+    // ════════════════════════════════════════════════
+    // PIE DE PÁGINA en todas las páginas
+    // ════════════════════════════════════════════════
+    const totalPages = doc.getNumberOfPages();
+    for (let p = 1; p <= totalPages; p++) {
+      doc.setPage(p);
+      doc.setFillColor(...BLUE);
+      doc.rect(0, 290, W, 7, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...WHT);
+      doc.text(`Rodolfo Roque Cárcamo Mesa — Technical Lead & Senior Java Engineer`, ML, 294.5);
+      doc.text(`${p} / ${totalPages}`, W - MR, 294.5, { align: 'right' });
+    }
+
+    // ── Descargar ─────────────────────────────────
+    doc.save('CV_RodolfoCarcamo.pdf');
+
+    btn.disabled    = false;
+    label.textContent = 'Descargar CV';
+    icon.textContent  = '⬇';
   }
 </script>
 </body>
