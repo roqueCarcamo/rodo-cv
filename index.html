@@ -7,23 +7,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ── Tokens ─────────────────────────────────────────── */
+    /* ── Design Tokens ──────────────────────────────────── */
     :root {
-      --bg:        #0A0C10;
-      --surface:   #0F1218;
-      --border:    #1C2030;
-      --muted:     #3A4055;
-      --subtle:    #6B7590;
-      --body:      #B8C0D4;
-      --heading:   #E8EDF5;
-      --accent:    #4F8EF7;      /* electric blue */
-      --accent2:   #7C5CFC;      /* violet — used sparingly */
-      --tag-bg:    #131826;
+      --bg:        #080B12;
+      --surface:   #0D1117;
+      --surface2:  #111622;
+      --border:    #1A2035;
+      --border2:   #243050;
+      --muted:     #36415C;
+      --subtle:    #5E6F94;
+      --body:      #A8B5CC;
+      --heading:   #E4EAF5;
+      --accent:    #3B82F6;
+      --accent-hi: #60A5FA;
+      --accent-lo: rgba(59,130,246,.12);
+      --accent2:   #6366F1;
+      --green:     #22C55E;
+      --tag-bg:    #0D1117;
       --font-sans: 'Space Grotesk', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      --radius:    6px;
-      --max:       960px;
-      --transition: 180ms ease;
+      --r:  8px;
+      --r2: 12px;
+      --max: 1000px;
+      --t:  200ms ease;
     }
 
     /* ── Reset ──────────────────────────────────────────── */
@@ -38,359 +44,507 @@
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; }
     ul { list-style: none; }
 
-    /* ── Layout helpers ─────────────────────────────────── */
-    .container { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
-    .section    { padding: 96px 0; }
+    /* ── Layout ─────────────────────────────────────────── */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+    .section { padding: 88px 0; }
     .section + .section { border-top: 1px solid var(--border); }
-    .label {
+
+    .eyebrow {
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 500;
-      letter-spacing: .14em;
+      letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      display: block;
     }
     .section-title {
-      font-size: clamp(22px, 3vw, 30px);
-      font-weight: 600;
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 700;
       color: var(--heading);
+      letter-spacing: -.03em;
+      line-height: 1.1;
       margin-bottom: 48px;
-      letter-spacing: -.02em;
     }
 
     /* ── Nav ────────────────────────────────────────────── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       border-bottom: 1px solid var(--border);
-      background: rgba(10,12,16,.88);
-      backdrop-filter: blur(14px);
+      background: rgba(8,11,18,.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
     .nav-inner {
       display: flex; align-items: center; justify-content: space-between;
-      height: 56px; max-width: var(--max); margin: 0 auto; padding: 0 28px;
+      height: 58px; max-width: var(--max); margin: 0 auto; padding: 0 28px;
     }
     .nav-logo {
       font-family: var(--font-mono);
       font-size: 13px;
-      font-weight: 400;
       color: var(--heading);
-      letter-spacing: .02em;
     }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 28px; }
+    .nav-logo em { color: var(--accent); font-style: normal; }
+    .nav-links { display: flex; gap: 24px; }
     .nav-links a {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--subtle);
-      transition: color var(--transition);
+      transition: color var(--t);
+      letter-spacing: .01em;
     }
     .nav-links a:hover { color: var(--heading); }
     .nav-cta {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 7px 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--body);
-      transition: border-color var(--transition), color var(--transition);
+      font-size: 12px; font-weight: 600;
+      padding: 7px 18px;
+      background: var(--accent-lo);
+      border: 1px solid rgba(59,130,246,.3);
+      border-radius: var(--r);
+      color: var(--accent-hi);
+      transition: background var(--t), border-color var(--t);
     }
-    .nav-cta:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-cta:hover { background: rgba(59,130,246,.2); border-color: var(--accent); }
 
     /* ── Hero ───────────────────────────────────────────── */
     #hero {
-      padding: 168px 0 100px;
+      padding: 160px 0 96px;
       position: relative;
       overflow: hidden;
     }
-    /* Signature element: animated grid of dots in background */
+    /* Dot grid */
     #hero::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-      background-size: 32px 32px;
-      opacity: .5;
-      mask-image: radial-gradient(ellipse 70% 70% at 50% 0%, black 30%, transparent 100%);
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, var(--border2) 1px, transparent 1px);
+      background-size: 30px 30px;
+      opacity: .6;
+      mask-image: radial-gradient(ellipse 80% 80% at 20% 10%, black 20%, transparent 80%);
     }
+    /* Blue glow */
     #hero::after {
       content: '';
-      position: absolute;
-      top: -120px; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(79,142,247,.07) 0%, transparent 70%);
+      position: absolute; top: -80px; left: -60px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(59,130,246,.06) 0%, transparent 65%);
       pointer-events: none;
     }
-    .hero-inner { position: relative; z-index: 1; }
-    .hero-eyebrow {
+    .hero-inner {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-badge {
       display: inline-flex; align-items: center; gap: 8px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--accent);
-      border: 1px solid rgba(79,142,247,.25);
+      border: 1px solid rgba(59,130,246,.25);
       border-radius: 40px;
       padding: 5px 14px;
-      margin-bottom: 32px;
-      letter-spacing: .08em;
+      margin-bottom: 28px;
+      letter-spacing: .06em;
     }
-    .hero-eyebrow::before {
-      content: '';
-      display: block; width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s ease infinite;
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 2s ease infinite;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: .4; transform: scale(.7); }
+    @keyframes blink {
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:.35;transform:scale(.65)}
     }
     .hero-name {
-      font-size: clamp(38px, 6vw, 68px);
+      font-size: clamp(36px, 5.5vw, 64px);
       font-weight: 700;
       color: var(--heading);
       letter-spacing: -.04em;
-      line-height: 1.05;
-      margin-bottom: 8px;
-    }
-    .hero-role {
-      font-size: clamp(16px, 2.2vw, 22px);
-      font-weight: 300;
-      color: var(--subtle);
-      margin-bottom: 28px;
-      letter-spacing: -.01em;
-    }
-    .hero-role strong { color: var(--body); font-weight: 500; }
-    .hero-desc {
-      max-width: 540px;
-      font-size: 16px;
-      color: var(--body);
-      line-height: 1.7;
-      margin-bottom: 44px;
-    }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 11px 22px;
-      border-radius: var(--radius);
-      transition: opacity var(--transition), transform var(--transition);
-    }
-    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
-    .btn-ghost {
-      display: inline-flex; align-items: center; gap: 8px;
-      border: 1px solid var(--border);
-      color: var(--body);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 11px 22px;
-      border-radius: var(--radius);
-      transition: border-color var(--transition), color var(--transition);
-    }
-    .btn-ghost:hover { border-color: var(--muted); color: var(--heading); }
-    .hero-stats {
-      display: flex; gap: 36px; flex-wrap: wrap;
-      margin-top: 60px;
-      padding-top: 44px;
-      border-top: 1px solid var(--border);
-    }
-    .stat-item .stat-num {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--heading);
-      letter-spacing: -.03em;
-    }
-    .stat-item .stat-num span { color: var(--accent); }
-    .stat-item .stat-desc {
-      font-size: 12px;
-      color: var(--subtle);
-      margin-top: 2px;
-    }
-
-    /* ── Stack ──────────────────────────────────────────── */
-    #stack .stack-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      gap: 8px;
-    }
-    .stack-chip {
-      display: flex; align-items: center; gap: 7px;
-      background: var(--tag-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 9px 13px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--body);
-      transition: border-color var(--transition), color var(--transition);
-    }
-    .stack-chip:hover { border-color: var(--accent); color: var(--heading); }
-    .stack-dot {
-      width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
-    }
-    .dot-java    { background: #f89820; }
-    .dot-cloud   { background: #FF9900; }
-    .dot-k8s     { background: #326CE5; }
-    .dot-obs     { background: #E6522C; }
-    .dot-arch    { background: var(--accent); }
-    .dot-ai      { background: var(--accent2); }
-    .dot-devops  { background: #5BCC5B; }
-    .dot-db      { background: #00758F; }
-    .dot-msg     { background: #FF4F00; }
-
-    /* ── Services ───────────────────────────────────────── */
-    #services .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .service-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 28px;
-      transition: border-color var(--transition), transform var(--transition);
-    }
-    .service-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-    }
-    .service-icon {
-      width: 40px; height: 40px;
-      border-radius: 8px;
-      background: rgba(79,142,247,.1);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 18px;
-      font-size: 18px;
-    }
-    .service-card h3 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--heading);
+      line-height: 1.0;
       margin-bottom: 10px;
     }
-    .service-card p {
-      font-size: 13px;
+    .hero-role {
+      font-size: clamp(15px, 2vw, 20px);
+      font-weight: 400;
       color: var(--subtle);
-      line-height: 1.6;
+      margin-bottom: 24px;
+      letter-spacing: -.01em;
+    }
+    .hero-role strong { color: var(--accent-hi); font-weight: 600; }
+    .hero-desc {
+      max-width: 520px;
+      font-size: 15px;
+      color: var(--body);
+      line-height: 1.75;
+      margin-bottom: 36px;
+    }
+    .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* Profile photo */
+    .hero-photo-wrap {
+      flex-shrink: 0;
+      position: relative;
+    }
+    .hero-photo {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border2);
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-photo-placeholder {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      border: 2px solid var(--border2);
+      background: linear-gradient(135deg, var(--surface2) 0%, #0f1829 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px;
+      position: relative;
+    }
+    .hero-photo-ring {
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(59,130,246,.2);
+    }
+    .hero-photo-ring2 {
+      position: absolute; inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(59,130,246,.08);
     }
 
-    /* ── Projects ───────────────────────────────────────── */
-    #projects .projects-list { display: flex; flex-direction: column; gap: 16px; }
-    .project-row {
+    /* Stats bar */
+    .hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      margin-top: 52px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+    }
+    .stat-num {
+      font-size: 26px; font-weight: 700;
+      color: var(--heading); letter-spacing: -.03em;
+    }
+    .stat-num em { color: var(--accent); font-style: normal; }
+    .stat-label { font-size: 11.5px; color: var(--subtle); margin-top: 2px; }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--accent);
+      color: #fff; font-size: 13px; font-weight: 600;
+      padding: 11px 22px; border-radius: var(--r);
+      transition: opacity var(--t), transform var(--t);
+    }
+    .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--border2);
+      color: var(--body); font-size: 13px; font-weight: 500;
+      padding: 11px 22px; border-radius: var(--r);
+      transition: border-color var(--t), color var(--t);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--heading); }
+
+    /* ── Services ───────────────────────────────────────── */
+    .services-grid {
       display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: start;
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+      gap: 14px;
+    }
+    .svc-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px 28px;
-      transition: border-color var(--transition);
+      border-radius: var(--r2);
+      padding: 26px;
+      transition: border-color var(--t), transform var(--t), box-shadow var(--t);
     }
-    .project-row:hover { border-color: var(--muted); }
-    .project-tag {
+    .svc-card:hover {
+      border-color: rgba(59,130,246,.4);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,.3);
+    }
+    .svc-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: var(--accent-lo);
+      border: 1px solid rgba(59,130,246,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 16px;
+    }
+    .svc-card h3 { font-size: 14.5px; font-weight: 600; color: var(--heading); margin-bottom: 8px; }
+    .svc-card p  { font-size: 12.5px; color: var(--subtle); line-height: 1.65; }
+
+    /* ── Stack ──────────────────────────────────────────── */
+    .stack-cats { display: flex; flex-direction: column; gap: 32px; }
+    .stack-cat-label {
       font-family: var(--font-mono);
       font-size: 10px;
-      color: var(--accent);
-      letter-spacing: .1em;
+      color: var(--muted);
+      letter-spacing: .12em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .project-row h3 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--heading);
-      margin-bottom: 8px;
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--body);
+      transition: border-color var(--t), color var(--t);
     }
-    .project-row p {
-      font-size: 13px;
-      color: var(--subtle);
-      max-width: 580px;
-      line-height: 1.6;
+    .chip:hover { border-color: var(--border2); color: var(--heading); }
+    .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .d-java  { background: #F89820; }
+    .d-api   { background: var(--accent); }
+    .d-db    { background: #22C55E; }
+    .d-devops{ background: #A855F7; }
+    .d-qa    { background: #F43F5E; }
+
+    /* ── Projects ───────────────────────────────────────── */
+    .proj-list { display: flex; flex-direction: column; gap: 12px; }
+    .proj-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 22px 26px;
+      transition: border-color var(--t);
     }
-    .project-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .proj-row:hover { border-color: var(--border2); }
+    .proj-tag {
+      font-family: var(--font-mono);
+      font-size: 9.5px; color: var(--accent);
+      letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .proj-row h3 { font-size: 14.5px; font-weight: 600; color: var(--heading); margin-bottom: 7px; }
+    .proj-row p  { font-size: 12.5px; color: var(--subtle); line-height: 1.6; max-width: 560px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
     .badge {
       font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 3px 9px;
+      font-size: 10px; padding: 3px 8px;
       border-radius: 4px;
       background: var(--tag-bg);
       border: 1px solid var(--border);
       color: var(--subtle);
     }
-    .project-meta {
-      text-align: right;
+    .status-live {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 10px; color: var(--green);
       white-space: nowrap;
     }
-    .project-meta .status {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: #5BCC5B;
-    }
-    .project-meta .status::before {
-      content: '';
-      width: 5px; height: 5px; border-radius: 50%;
-      background: #5BCC5B;
+    .status-live::before {
+      content: ''; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--green);
     }
 
     /* ── Experience ─────────────────────────────────────── */
-    #experience .exp-list { display: flex; flex-direction: column; gap: 0; }
-    .exp-item {
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
       display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 32px;
-      padding: 32px 0;
+      grid-template-columns: 150px 1fr;
+      gap: 28px;
+      padding: 28px 0;
       border-bottom: 1px solid var(--border);
     }
-    .exp-item:last-child { border-bottom: none; }
-    .exp-date {
+    .tl-item:last-child { border-bottom: none; }
+    .tl-left {
+      padding-top: 3px;
+    }
+    .tl-period {
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--subtle);
-      padding-top: 4px;
-      line-height: 1.5;
+      font-size: 10.5px; color: var(--subtle); line-height: 1.6;
     }
-    .exp-date strong { display: block; color: var(--body); font-weight: 500; font-size: 12px; }
-    .exp-content h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--heading);
-      margin-bottom: 4px;
+    .tl-period strong { display: block; color: var(--green); font-size: 11px; margin-bottom: 2px; }
+    .tl-right h3 { font-size: 15.5px; font-weight: 600; color: var(--heading); margin-bottom: 3px; }
+    .tl-company { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); margin-bottom: 10px; }
+    .tl-right p  { font-size: 13px; color: var(--subtle); line-height: 1.65; }
+    .tl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+
+    /* ── Certifications ─────────────────────────────────── */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
     }
-    .exp-company {
-      font-size: 13px;
+    .cert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 22px 24px;
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: border-color var(--t), transform var(--t);
+    }
+    .cert-card:hover { border-color: rgba(59,130,246,.35); transform: translateY(-2px); }
+    .cert-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: var(--accent-lo);
+      border: 1px solid rgba(59,130,246,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .cert-info h3 { font-size: 13.5px; font-weight: 600; color: var(--heading); margin-bottom: 4px; }
+    .cert-info p  { font-size: 11.5px; color: var(--subtle); line-height: 1.5; }
+    .cert-info .cert-date {
+      font-family: var(--font-mono);
+      font-size: 10px; color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Testimonials ───────────────────────────────────── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+    .testi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 26px;
+      position: relative;
+      transition: border-color var(--t);
+    }
+    .testi-card:hover { border-color: var(--border2); }
+    .testi-quote {
+      font-size: 32px; line-height: 1;
       color: var(--accent);
+      font-family: Georgia, serif;
       margin-bottom: 12px;
+      opacity: .6;
+    }
+    .testi-text {
+      font-size: 13.5px;
+      color: var(--body);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    .testi-author {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .testi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-lo), var(--surface2));
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .testi-name { font-size: 13px; font-weight: 600; color: var(--heading); }
+    .testi-role { font-size: 11px; color: var(--subtle); }
+
+    /* ── Education ──────────────────────────────────────── */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 24px;
+      transition: border-color var(--t);
+    }
+    .edu-card:hover { border-color: var(--border2); }
+    .edu-type {
       font-family: var(--font-mono);
+      font-size: 9.5px; color: var(--accent);
+      letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 8px;
     }
-    .exp-content p {
-      font-size: 13px;
-      color: var(--subtle);
-      line-height: 1.65;
+    .edu-card h3 { font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 4px; }
+    .edu-card p  { font-size: 12.5px; color: var(--subtle); }
+
+    .lang-row {
+      display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap;
     }
-    .exp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .lang-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 12px 18px;
+    }
+    .lang-flag { font-size: 20px; }
+    .lang-name { font-size: 13px; font-weight: 600; color: var(--heading); }
+    .lang-level { font-size: 11px; color: var(--subtle); }
 
     /* ── Contact ────────────────────────────────────────── */
-    #contact {
-      padding: 96px 0;
-      text-align: center;
+    #contact { text-align: center; }
+    .contact-card {
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 48px 40px;
     }
-    #contact .section-title { margin-bottom: 16px; }
-    #contact .contact-sub {
-      color: var(--subtle);
-      font-size: 15px;
-      max-width: 420px;
-      margin: 0 auto 40px;
+    .contact-card h2 {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 700; color: var(--heading);
+      letter-spacing: -.03em; margin-bottom: 10px;
     }
-    .contact-links {
-      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    .contact-card .sub {
+      font-size: 14px; color: var(--subtle); margin-bottom: 32px; line-height: 1.6;
     }
+
+    /* Contact form */
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label {
+      display: block;
+      font-size: 11.5px; font-weight: 500;
+      color: var(--body); margin-bottom: 6px;
+      font-family: var(--font-mono); letter-spacing: .05em;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-family: var(--font-sans);
+      color: var(--heading);
+      outline: none;
+      transition: border-color var(--t);
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--muted); }
+    .form-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: var(--muted); font-size: 12px;
+    }
+    .form-divider::before,
+    .form-divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+    .contact-socials { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 999;
+      background: var(--green); color: #fff;
+      font-size: 13px; font-weight: 600;
+      padding: 12px 20px; border-radius: var(--r);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
 
     /* ── Footer ─────────────────────────────────────────── */
     footer {
@@ -398,420 +552,531 @@
       padding: 28px;
       text-align: center;
     }
-    footer p {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-    }
-    footer span { color: var(--accent); }
+    footer p { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    footer em { color: var(--accent); font-style: normal; }
 
-    /* ── Reveal animation ───────────────────────────────── */
+    /* ── Reveal ─────────────────────────────────────────── */
     .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity .55s ease, transform .55s ease;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity .5s ease, transform .5s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* ── Responsive ─────────────────────────────────────── */
-    @media (max-width: 640px) {
+    @media (max-width: 700px) {
       .nav-links { display: none; }
-      .exp-item  { grid-template-columns: 1fr; gap: 6px; }
-      .project-row { grid-template-columns: 1fr; }
-      .project-meta { text-align: left; }
-      .hero-stats { gap: 24px; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-photo-wrap { order: -1; }
+      .hero-photo-placeholder { width: 100px; height: 100px; font-size: 36px; }
+      .hero-photo-ring, .hero-photo-ring2 { display: none; }
+      .tl-item { grid-template-columns: 1fr; gap: 4px; }
+      .proj-row { grid-template-columns: 1fr; }
+      .contact-card { padding: 28px 20px; }
+      .hero-stats { gap: 20px; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .reveal, .btn-primary, .service-card { transition: none; }
-      #hero::before { animation: none; }
+      .reveal, .svc-card, .btn-primary { transition: none; }
+      .hero-badge-dot { animation: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-inner">
-      <span class="nav-logo">rodolfo<span>.</span>dev</span>
-      <div class="nav-links">
-        <a href="#services">Servicios</a>
-        <a href="#stack">Stack</a>
-        <a href="#projects">Proyectos</a>
-        <a href="#experience">Experiencia</a>
-        <a href="#education">Educación</a>
-        <a href="#contact">Contacto</a>
-      </div>
-      <a class="nav-cta" href="#contact">Hablemos →</a>
+<!-- TOAST -->
+<div id="toast">✓ Mensaje enviado correctamente</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">rodolfo<em>.</em>dev</span>
+    <div class="nav-links">
+      <a href="#services">Servicios</a>
+      <a href="#stack">Stack</a>
+      <a href="#experience">Experiencia</a>
+      <a href="#certs">Certificaciones</a>
+      <a href="#testimonials">Recomendaciones</a>
+      <a href="#contact">Contacto</a>
     </div>
-  </nav>
+    <a class="nav-cta" href="#contact">Hablemos →</a>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="container hero-inner">
-      <div class="hero-eyebrow">Disponible para proyectos</div>
-      <h1 class="hero-name">Rodolfo Cárcamo</h1>
-      <p class="hero-role"><strong>Technical Lead</strong> · Senior Java Engineer · Montería, Colombia</p>
-      <p class="hero-desc">
-        Ingeniero de Sistemas con más de 10 años de experiencia en desarrollo backend y liderazgo técnico.
-        Especialista en Java (8–21), Spring Boot y arquitecturas de microservicios. Lidero equipos remotos,
-        diseño soluciones escalables y alineo decisiones técnicas con objetivos de negocio en entornos empresariales.
-      </p>
-      <div class="hero-actions">
-        <a class="btn-primary" href="#contact">Contactar</a>
-        <a class="btn-ghost" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">LinkedIn ↗</a>
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Disponible para proyectos
+        </div>
+        <h1 class="hero-name">Rodolfo<br/>Cárcamo</h1>
+        <p class="hero-role"><strong>Technical Lead</strong> · Senior Java Engineer</p>
+        <p class="hero-desc">
+          Ingeniero de Sistemas con más de 10 años de experiencia en desarrollo backend y liderazgo técnico.
+          Especialista en Java (8–21), Spring Boot y arquitecturas de microservicios. Lidero equipos remotos
+          y alineo decisiones técnicas con objetivos de negocio en entornos empresariales.
+        </p>
+        <div class="hero-btns">
+          <a class="btn-primary" href="#contact">Contactar</a>
+          <a class="btn-ghost" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">LinkedIn ↗</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">10<em>+</em></div>
+            <div class="stat-label">Años de experiencia</div>
+          </div>
+          <div>
+            <div class="stat-num">6<em>+</em></div>
+            <div class="stat-label">Años en Conexia</div>
+          </div>
+          <div>
+            <div class="stat-num">Java</div>
+            <div class="stat-label">8 · 11 · 17 · 21</div>
+          </div>
+          <div>
+            <div class="stat-num">EN</div>
+            <div class="stat-label">Inglés profesional</div>
+          </div>
+        </div>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num">100<span>+</span></div>
-          <div class="stat-desc">Microservicios en producción</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">10<span>+</span></div>
-          <div class="stat-desc">Años de experiencia</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">Conexia</div>
-          <div class="stat-desc">Technical Lead actual</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">AI<span>‑Driven</span></div>
-          <div class="stat-desc">Tooling & automación</div>
-        </div>
+      <!-- PHOTO -->
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-ring2"></div>
+        <div class="hero-photo-ring"></div>
+        <div class="hero-photo-placeholder">👨‍💻</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- SERVICES -->
-  <section id="services" class="section">
-    <div class="container">
-      <p class="label reveal">Lo que hago</p>
-      <h2 class="section-title reveal">Servicios</h2>
-      <div class="services-grid">
+<!-- ── SERVICES ───────────────────────────────────────────── -->
+<section id="services" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Lo que hago</span>
+    <h2 class="section-title reveal">Servicios</h2>
+    <div class="services-grid">
 
-        <div class="service-card reveal">
-          <div class="service-icon">🏗️</div>
-          <h3>Arquitectura de Microservicios</h3>
-          <p>Diseño de plataformas escalables con Java y Spring Boot. Servicios REST y SOAP, JPA/Hibernate, integración con PostgreSQL, Oracle y MySQL.</p>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🏗️</div>
+        <h3>Arquitectura de Microservicios</h3>
+        <p>Diseño de plataformas escalables con Java y Spring Boot. Servicios REST y SOAP, JPA/Hibernate, integración con PostgreSQL, Oracle y MySQL en entornos enterprise.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">👨‍💻</div>
+        <h3>Technical Lead</h3>
+        <p>Coordinación de equipos técnicos remotos. Alineación de la visión tecnológica con objetivos estratégicos y definición de criterios para selección de tecnologías.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">🔍</div>
+        <h3>Code Review & Estándares</h3>
+        <p>Revisión de código, definición de estándares de desarrollo y gestión de requerimientos técnicos por release. Calidad garantizada con SonarQube y Mockito.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">🔒</div>
+        <h3>Seguridad OWASP</h3>
+        <p>Aplicación de prácticas OWASP en aplicaciones productivas, hardening de endpoints REST/SOAP y remediación de vulnerabilidades en entornos empresariales.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">⚙️</div>
+        <h3>CI/CD & DevOps</h3>
+        <p>Pipelines de integración y entrega continua con Docker, Git y Maven. Estrategias de despliegue seguras y reproducibles en entornos de producción.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">🤝</div>
+        <h3>Colaboración Transversal</h3>
+        <p>Trabajo coordinado con QA, Comercial y Soporte. Gestión de expectativas entre equipos técnicos y de negocio para asegurar entregas alineadas con el valor esperado.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">🗄️</div>
+        <h3>Bases de Datos & Integración</h3>
+        <p>Diseño y optimización de bases de datos Oracle, PostgreSQL y MySQL. Integración de sistemas heterogéneos mediante servicios REST/SOAP con JPA e Hibernate.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">📄</div>
+        <h3>Documentación Técnica</h3>
+        <p>Generación de documentación funcional y técnica, especificaciones de servicios, estándares de desarrollo y soporte a equipos durante fases de onboarding y entrega.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-icon">🌐</div>
+        <h3>Equipos Remotos & Global</h3>
+        <p>Experiencia en equipos 100% remotos con comunicación en español e inglés profesional (ILA Canada, Toronto). Coordinación en zonas horarias distribuidas.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── STACK ──────────────────────────────────────────────── -->
+<section id="stack" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Tecnologías</span>
+    <h2 class="section-title reveal">Stack Técnico</h2>
+    <div class="stack-cats reveal">
+
+      <div>
+        <p class="stack-cat-label">Backend & Frameworks</p>
+        <div class="chips">
+          <span class="chip"><span class="dot d-java"></span>Java 8</span>
+          <span class="chip"><span class="dot d-java"></span>Java 11</span>
+          <span class="chip"><span class="dot d-java"></span>Java 17</span>
+          <span class="chip"><span class="dot d-java"></span>Java 21</span>
+          <span class="chip"><span class="dot d-java"></span>Spring Boot</span>
+          <span class="chip"><span class="dot d-java"></span>JPA</span>
+          <span class="chip"><span class="dot d-java"></span>Hibernate</span>
+          <span class="chip"><span class="dot d-java"></span>Java J2EE</span>
+          <span class="chip"><span class="dot d-java"></span>JSF</span>
+          <span class="chip"><span class="dot d-java"></span>Maven</span>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">👨‍💻</div>
+      <div>
+        <p class="stack-cat-label">APIs & Arquitectura</p>
+        <div class="chips">
+          <span class="chip"><span class="dot d-api"></span>REST</span>
+          <span class="chip"><span class="dot d-api"></span>SOAP</span>
+          <span class="chip"><span class="dot d-api"></span>Microservicios</span>
+          <span class="chip"><span class="dot d-api"></span>OWASP</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="stack-cat-label">Bases de Datos</p>
+        <div class="chips">
+          <span class="chip"><span class="dot d-db"></span>PostgreSQL</span>
+          <span class="chip"><span class="dot d-db"></span>Oracle</span>
+          <span class="chip"><span class="dot d-db"></span>MySQL</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="stack-cat-label">DevOps & Herramientas</p>
+        <div class="chips">
+          <span class="chip"><span class="dot d-devops"></span>Docker</span>
+          <span class="chip"><span class="dot d-devops"></span>Git</span>
+          <span class="chip"><span class="dot d-devops"></span>Jira</span>
+          <span class="chip"><span class="dot d-devops"></span>Scrum</span>
+          <span class="chip"><span class="dot d-devops"></span>Kanban</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="stack-cat-label">Calidad & Testing</p>
+        <div class="chips">
+          <span class="chip"><span class="dot d-qa"></span>SonarQube</span>
+          <span class="chip"><span class="dot d-qa"></span>Mockito</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ─────────────────────────────────────────── -->
+<section id="experience" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Trayectoria</span>
+    <h2 class="section-title reveal">Experiencia Profesional</h2>
+    <div class="timeline">
+
+      <div class="tl-item reveal">
+        <div class="tl-left">
+          <div class="tl-period">
+            <strong>● Actual</strong>
+            Abr 2025<br/>— Presente
+          </div>
+        </div>
+        <div class="tl-right">
           <h3>Technical Lead</h3>
-          <p>Coordinación de equipos técnicos remotos, alineación de la visión tecnológica con objetivos estratégicos y definición de criterios para selección de tecnologías y frameworks.</p>
+          <p class="tl-company">Conexia S.A.S — Remoto</p>
+          <p>Liderazgo de la arquitectura backend con Java y Spring Boot. Coordinación de equipos técnicos alineando la visión tecnológica con objetivos estratégicos. Definición de criterios para selección de tecnologías, impulso de prácticas OWASP y trabajo transversal con QA, Comercial y Soporte.</p>
+          <div class="tl-tags">
+            <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">OWASP</span>
+            <span class="badge">Tech Lead</span><span class="badge">Remoto</span>
+          </div>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">🔍</div>
-          <h3>Code Review & Estándares</h3>
-          <p>Revisión de código, definición de estándares de desarrollo, gestión de requerimientos técnicos y funcionales por release, y aplicación de buenas prácticas de calidad con SonarQube.</p>
+      <div class="tl-item reveal">
+        <div class="tl-left">
+          <div class="tl-period">
+            Nov 2018<br/>— Abr 2025<br/><br/>6 años 5 meses
+          </div>
         </div>
-
-        <div class="service-card reveal">
-          <div class="service-icon">🔒</div>
-          <h3>Seguridad OWASP</h3>
-          <p>Aplicación de prácticas OWASP en aplicaciones productivas, hardening de endpoints REST/SOAP, remediación de vulnerabilidades y auditorías de seguridad en entornos empresariales.</p>
+        <div class="tl-right">
+          <h3>Senior Java Developer</h3>
+          <p class="tl-company">Conexia S.A.S — Remoto</p>
+          <p>Diseño e implementación de servicios REST y SOAP con Java y Spring Boot. Liderazgo técnico, revisión de código y definición de estándares. Gestión de requerimientos por release, integración con PostgreSQL, Oracle y MySQL, y aplicación de prácticas OWASP en producción.</p>
+          <div class="tl-tags">
+            <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">REST</span>
+            <span class="badge">SOAP</span><span class="badge">PostgreSQL</span><span class="badge">Oracle</span>
+          </div>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">⚙️</div>
-          <h3>CI/CD & DevOps</h3>
-          <p>Pipelines de integración y entrega continua, gestión de releases con Git, Docker y Maven. Estrategias de despliegue seguras y reproducibles en entornos enterprise.</p>
+      <div class="tl-item reveal">
+        <div class="tl-left">
+          <div class="tl-period">
+            Ene 2014<br/>— Ene 2018<br/><br/>4 años
+          </div>
         </div>
-
-        <div class="service-card reveal">
-          <div class="service-icon">🤝</div>
-          <h3>Trabajo Transversal</h3>
-          <p>Colaboración con equipos de QA, Comercial y Soporte para alinear la entrega técnica con las necesidades del negocio. Gestión de expectativas y comunicación entre áreas.</p>
+        <div class="tl-right">
+          <h3>Ingeniero de Desarrollo</h3>
+          <p class="tl-company">Solinces S.A.S</p>
+          <p>Desarrollo de aplicaciones Java J2EE y JSF. Diseño y optimización de bases de datos Oracle. Soporte, mantenimiento y documentación técnica de sistemas empresariales.</p>
+          <div class="tl-tags">
+            <span class="badge">Java J2EE</span><span class="badge">JSF</span>
+            <span class="badge">Oracle</span><span class="badge">Documentación</span>
+          </div>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">🗄️</div>
-          <h3>Bases de Datos & Integración</h3>
-          <p>Diseño y optimización de bases de datos PostgreSQL, Oracle y MySQL. Integración de sistemas mediante servicios REST y SOAP con JPA e Hibernate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CERTIFICATIONS ─────────────────────────────────────── -->
+<section id="certs" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Formación continua</span>
+    <h2 class="section-title reveal">Certificaciones & Cursos</h2>
+    <div class="certs-grid">
+
+      <div class="cert-card reveal">
+        <div class="cert-icon">☕</div>
+        <div class="cert-info">
+          <h3>Java Spring Boot Microservices</h3>
+          <p>Arquitectura de microservicios con Spring Boot, Spring Cloud y patrones de diseño empresariales.</p>
+          <p class="cert-date">Udemy · En curso</p>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">📄</div>
-          <h3>Documentación Técnica</h3>
-          <p>Generación de documentación técnica y funcional, especificaciones de servicios, manuales de estándares y soporte técnico a equipos de desarrollo y operaciones.</p>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🔒</div>
+        <div class="cert-info">
+          <h3>OWASP Top 10 — Application Security</h3>
+          <p>Principios de seguridad web, vulnerabilidades críticas y estrategias de mitigación aplicadas a APIs REST/SOAP.</p>
+          <p class="cert-date">Aplicado en producción · Conexia</p>
         </div>
+      </div>
 
-        <div class="service-card reveal">
-          <div class="service-icon">🌐</div>
-          <h3>Inglés Profesional</h3>
-          <p>Professional Working Proficiency (ILA Canada, Toronto). Capacidad de trabajo en equipos internacionales, revisión de documentación técnica y comunicación con stakeholders globales.</p>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐳</div>
+        <div class="cert-info">
+          <h3>Docker & Contenedores</h3>
+          <p>Contenerización de aplicaciones Java, Docker Compose y despliegue en entornos productivos.</p>
+          <p class="cert-date">Formación práctica</p>
         </div>
+      </div>
 
+      <div class="cert-card reveal">
+        <div class="cert-icon">📐</div>
+        <div class="cert-info">
+          <h3>Especialización en Ingeniería del Software</h3>
+          <p>Posgrado universitario con énfasis en patrones de diseño, calidad de software y metodologías ágiles.</p>
+          <p class="cert-date">Universidad del Norte</p>
+        </div>
+      </div>
+
+      <div class="cert-card reveal">
+        <div class="cert-icon">🌐</div>
+        <div class="cert-info">
+          <h3>Intensive General English</h3>
+          <p>Inglés profesional con enfoque en comunicación técnica y de negocios. Professional Working Proficiency.</p>
+          <p class="cert-date">ILA Canada · Toronto</p>
+        </div>
+      </div>
+
+      <div class="cert-card reveal">
+        <div class="cert-icon">✅</div>
+        <div class="cert-info">
+          <h3>Scrum & Metodologías Ágiles</h3>
+          <p>Gestión de proyectos con Scrum y Kanban. Planificación de sprints, gestión de backlog y ceremonias ágiles.</p>
+          <p class="cert-date">Aplicado en equipos remotos</p>
+        </div>
+      </div>
+
+    </div>
+    <p style="margin-top:20px; font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+      * Puedes actualizar estas certificaciones con tus cursos reales de Udemy, Platzi, Coursera, etc.
+    </p>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ───────────────────────────────────────── -->
+<section id="testimonials" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Recomendaciones</span>
+    <h2 class="section-title reveal">Lo que dicen de mí</h2>
+    <div class="testimonials-grid">
+
+      <div class="testi-card reveal">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Rodolfo tiene una capacidad única para traducir requerimientos de negocio en soluciones técnicas sólidas. Su liderazgo mejora notablemente la calidad del equipo.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">👤</div>
+          <div>
+            <div class="testi-name">Colega de equipo</div>
+            <div class="testi-role">Conexia S.A.S · Reemplazar con nombre real</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Su dominio de Spring Boot y su criterio en code reviews elevaron los estándares de todo el equipo. Siempre dispuesto a compartir conocimiento.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">👤</div>
+          <div>
+            <div class="testi-name">Compañero desarrollador</div>
+            <div class="testi-role">Conexia S.A.S · Reemplazar con nombre real</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal">
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Excelente perfil técnico y humano. Su manejo de OWASP y las buenas prácticas de seguridad marcaron una diferencia real en nuestras aplicaciones productivas.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">👤</div>
+          <div>
+            <div class="testi-name">Líder de proyecto</div>
+            <div class="testi-role">Solinces S.A.S · Reemplazar con nombre real</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p style="margin-top:20px; font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+      * Reemplaza estos testimonios con recomendaciones reales de LinkedIn o colegas.
+    </p>
+  </div>
+</section>
+
+<!-- ── EDUCATION ──────────────────────────────────────────── -->
+<section id="education" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal">Formación académica</span>
+    <h2 class="section-title reveal">Educación & Idiomas</h2>
+    <div class="edu-grid">
+
+      <div class="edu-card reveal">
+        <p class="edu-type">Posgrado</p>
+        <h3>Especialización en Ingeniería del Software</h3>
+        <p>Universidad del Norte</p>
+      </div>
+
+      <div class="edu-card reveal">
+        <p class="edu-type">Pregrado</p>
+        <h3>Ingeniero de Sistemas</h3>
+        <p>Fundación Universidad Tecnológica Comfenalco</p>
+      </div>
+
+      <div class="edu-card reveal">
+        <p class="edu-type">Internacional</p>
+        <h3>Intensive General English Course</h3>
+        <p>ILA Canada — Toronto</p>
+      </div>
+
+    </div>
+
+    <div class="lang-row reveal">
+      <div class="lang-pill">
+        <span class="lang-flag">🇨🇴</span>
+        <div>
+          <div class="lang-name">Español</div>
+          <div class="lang-level">Nativo</div>
+        </div>
+      </div>
+      <div class="lang-pill">
+        <span class="lang-flag">🇨🇦</span>
+        <div>
+          <div class="lang-name">Inglés</div>
+          <div class="lang-level">Professional Working Proficiency</div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- STACK -->
-  <section id="stack" class="section">
-    <div class="container">
-      <p class="label reveal">Tecnologías</p>
-      <h2 class="section-title reveal">Stack</h2>
-      <div class="stack-grid reveal">
-        <!-- Java & Backend -->
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>Java 8–21</div>
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>Spring Boot</div>
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>JPA</div>
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>Hibernate</div>
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>Mockito</div>
-        <div class="stack-chip"><span class="stack-dot dot-java"></span>Maven</div>
-        <!-- APIs -->
-        <div class="stack-chip"><span class="stack-dot dot-arch"></span>REST</div>
-        <div class="stack-chip"><span class="stack-dot dot-arch"></span>SOAP</div>
-        <div class="stack-chip"><span class="stack-dot dot-arch"></span>Microservicios</div>
-        <div class="stack-chip"><span class="stack-dot dot-arch"></span>OWASP</div>
-        <!-- Bases de Datos -->
-        <div class="stack-chip"><span class="stack-dot dot-db"></span>PostgreSQL</div>
-        <div class="stack-chip"><span class="stack-dot dot-db"></span>Oracle</div>
-        <div class="stack-chip"><span class="stack-dot dot-db"></span>MySQL</div>
-        <!-- DevOps -->
-        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Docker</div>
-        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Git</div>
-        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Jira</div>
-        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Scrum</div>
-        <div class="stack-chip"><span class="stack-dot dot-devops"></span>Kanban</div>
-        <!-- Calidad -->
-        <div class="stack-chip"><span class="stack-dot dot-obs"></span>SonarQube</div>
+<!-- ── CONTACT ────────────────────────────────────────────── -->
+<section id="contact" class="section">
+  <div class="wrap">
+    <span class="eyebrow reveal" style="display:block;text-align:center;">Contacto</span>
+    <div class="contact-card reveal">
+      <h2>¿Trabajamos juntos?</h2>
+      <p class="sub">Disponible para consultoría, liderazgo técnico, arquitectura backend y desarrollo Java. Escríbeme y te respondo en menos de 24h.</p>
+
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="f-name" placeholder="Tu nombre completo" />
       </div>
-    </div>
-  </section>
-
-  <!-- PROJECTS -->
-  <section id="projects" class="section">
-    <div class="container">
-      <p class="label reveal">Trabajo destacado</p>
-      <h2 class="section-title reveal">Proyectos</h2>
-      <div class="projects-list">
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">Migración · Arquitectura</p>
-            <h3>Positiva Integración Suite → Multimodule</h3>
-            <p>Migración de monolito Java a arquitectura Maven multimodule con Strangler Fig en dos fases. Dominios ARL, AP, SALUD y REEMBOLSOS desacoplados en servicios independientes con pipelines CI/CD dedicados.</p>
-            <div class="project-badges">
-              <span class="badge">Spring Boot</span><span class="badge">Maven Multimodule</span>
-              <span class="badge">Strangler Fig</span><span class="badge">Kubernetes</span><span class="badge">Jib</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">En curso</span></div>
-        </div>
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">Monitoreo · Transferencias</p>
-            <h3>cuida-transfers-monitor</h3>
-            <p>Microservicio Spring Boot para monitoreo de historial de transferencias en integraciones SIARP, Suite Conexia, Documental, Correo Certificado y Facturas. Con dashboards Metabase y alertas Google Chat.</p>
-            <div class="project-badges">
-              <span class="badge">Spring Boot</span><span class="badge">Metabase</span>
-              <span class="badge">Google Chat Cards v2</span><span class="badge">PostgreSQL</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">Producción</span></div>
-        </div>
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">AI · Análisis</p>
-            <h3>cuida-transfer-analyzer (MCP Server)</h3>
-            <p>Servidor MCP con seis herramientas para análisis de errores de transferencias SIARP usando Spring AI e inferencia local Ollama. Diseñado para privacidad de datos sin enviar información a APIs externas.</p>
-            <div class="project-badges">
-              <span class="badge">Spring AI</span><span class="badge">MCP Protocol</span>
-              <span class="badge">Ollama</span><span class="badge">SIARP</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">Producción</span></div>
-        </div>
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">Observabilidad · ELK</p>
-            <h3>cuida-elk-112</h3>
-            <p>Pipeline paralelo de extracción y clasificación de logs ELK para 112 microservicios con checkpoint/resume, reporte HTML interactivo e integración Windsurf. Reduce a horas un proceso manual de días.</p>
-            <div class="project-badges">
-              <span class="badge">Elasticsearch</span><span class="badge">Python</span>
-              <span class="badge">HTML Report</span><span class="badge">Windsurf</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">Producción</span></div>
-        </div>
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">DevOps · Releases</p>
-            <h3>cuida-kiro-release</h3>
-            <p>Proyecto Kiro con MCP servers (Atlassian, Bitbucket), cuatro steering files, hooks con aprobación requerida y clasificación de riesgo BAJO/MEDIO/ALTO/CRÍTICO vinculada a etiquetas Jira.</p>
-            <div class="project-badges">
-              <span class="badge">Kiro IDE</span><span class="badge">MCP Servers</span>
-              <span class="badge">Jira</span><span class="badge">Bitbucket</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">Producción</span></div>
-        </div>
-
-        <div class="project-row reveal">
-          <div>
-            <p class="project-tag">SLA · Kubernetes</p>
-            <h3>sla-monitor</h3>
-            <p>Servicio Spring Boot con descubrimiento dinámico de servicios Kubernetes, monitoreo PostgreSQL/Sybase y alertas Elasticsearch. OKR Q1: 100% SLA con MTTA menor a 60 minutos.</p>
-            <div class="project-badges">
-              <span class="badge">Spring Boot</span><span class="badge">K8s Discovery</span>
-              <span class="badge">Elasticsearch</span><span class="badge">Sybase</span>
-            </div>
-          </div>
-          <div class="project-meta"><span class="status">Producción</span></div>
-        </div>
-
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="f-email" placeholder="tu@email.com" />
       </div>
-    </div>
-  </section>
-
-  <!-- EXPERIENCE -->
-  <section id="experience" class="section">
-    <div class="container">
-      <p class="label reveal">Trayectoria</p>
-      <h2 class="section-title reveal">Experiencia</h2>
-      <div class="exp-list">
-
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            <strong>Actual</strong>
-            Abr 2025 — Presente
-          </div>
-          <div class="exp-content">
-            <h3>Technical Lead</h3>
-            <p class="exp-company">Conexia S.A.S — Remoto</p>
-            <p>Liderazgo de la arquitectura backend con Java y Spring Boot. Coordinación de equipos técnicos alineando la visión tecnológica con objetivos estratégicos. Definición de criterios para selección de tecnologías, impulso de prácticas OWASP y trabajo transversal con QA, Comercial y Soporte.</p>
-            <div class="exp-tags">
-              <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">OWASP</span>
-              <span class="badge">Tech Lead</span><span class="badge">Remoto</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            Nov 2018 — Abr 2025
-          </div>
-          <div class="exp-content">
-            <h3>Senior Java Developer</h3>
-            <p class="exp-company">Conexia S.A.S — Remoto</p>
-            <p>Diseño e implementación de servicios REST y SOAP con Java y Spring Boot. Liderazgo técnico, revisión de código y definición de estándares. Gestión de requerimientos técnicos y funcionales por release, integración con PostgreSQL, Oracle y MySQL, y aplicación de prácticas OWASP en producción.</p>
-            <div class="exp-tags">
-              <span class="badge">Java</span><span class="badge">Spring Boot</span><span class="badge">REST</span>
-              <span class="badge">SOAP</span><span class="badge">PostgreSQL</span><span class="badge">Oracle</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            Ene 2014 — Ene 2018
-          </div>
-          <div class="exp-content">
-            <h3>Ingeniero de Desarrollo</h3>
-            <p class="exp-company">Solinces S.A.S</p>
-            <p>Desarrollo de aplicaciones Java J2EE y JSF. Diseño y optimización de bases de datos Oracle. Soporte, mantenimiento y documentación técnica de sistemas empresariales.</p>
-            <div class="exp-tags">
-              <span class="badge">Java J2EE</span><span class="badge">JSF</span>
-              <span class="badge">Oracle</span><span class="badge">Documentación</span>
-            </div>
-          </div>
-        </div>
-
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea id="f-msg" rows="4" placeholder="Cuéntame sobre tu proyecto o propuesta..."></textarea>
       </div>
-    </div>
-  </section>
+      <button class="btn-primary" style="width:100%;justify-content:center;" onclick="sendForm()">
+        Enviar mensaje →
+      </button>
 
-  <!-- EDUCATION -->
-  <section id="education" class="section">
-    <div class="container">
-      <p class="label reveal">Formación</p>
-      <h2 class="section-title reveal">Educación & Idiomas</h2>
-      <div class="exp-list">
+      <div class="form-divider">o conéctate por</div>
 
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            <strong>Posgrado</strong>
-          </div>
-          <div class="exp-content">
-            <h3>Especialización en Ingeniería del Software</h3>
-            <p class="exp-company">Universidad del Norte</p>
-          </div>
-        </div>
-
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            <strong>Pregrado</strong>
-          </div>
-          <div class="exp-content">
-            <h3>Ingeniero de Sistemas</h3>
-            <p class="exp-company">Fundación Universidad Tecnológica Comfenalco</p>
-          </div>
-        </div>
-
-        <div class="exp-item reveal">
-          <div class="exp-date">
-            <strong>Internacional</strong>
-          </div>
-          <div class="exp-content">
-            <h3>Intensive General English Course</h3>
-            <p class="exp-company">ILA Canada — Toronto</p>
-            <p style="margin-top:10px; font-size:13px;">
-              <span style="color:var(--body); font-weight:500;">Español:</span>
-              <span style="color:var(--subtle);"> Nativo</span>
-              &nbsp;&nbsp;·&nbsp;&nbsp;
-              <span style="color:var(--body); font-weight:500;">Inglés:</span>
-              <span style="color:var(--subtle);"> Professional Working Proficiency</span>
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="section">
-    <div class="container">
-      <p class="label reveal" style="text-align:center;">Contacto</p>
-      <h2 class="section-title reveal">¿Trabajamos juntos?</h2>
-      <p class="contact-sub reveal">
-        Disponible para consultoría, arquitectura de plataformas, liderazgo técnico y automatización con IA.
-      </p>
-      <div class="contact-links reveal">
-        <a class="btn-primary" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">
+      <div class="contact-socials">
+        <a class="btn-ghost" href="https://www.linkedin.com/in/rodolfo-carcamo" target="_blank" rel="noopener">
           LinkedIn ↗
         </a>
-        <a class="btn-ghost" href="mailto:carcamomesa@gmail.com">
-          Enviar email
+        <a class="btn-ghost" href="mailto:tu@email.com">
+          Email directo
         </a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 <span>Rodolfo Roque Cárcamo Mesa</span> · Technical Lead & Senior Java Engineer · Montería, Colombia</p>
-  </footer>
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <em>Rodolfo Roque Cárcamo Mesa</em> · Technical Lead & Senior Java Engineer · Montería, Colombia</p>
+</footer>
 
-  <!-- Reveal on scroll -->
-  <script>
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 60);
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  </script>
+<script>
+  /* Reveal on scroll */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 55);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* Contact form — abre mailto como fallback */
+  function sendForm() {
+    const name  = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const msg   = document.getElementById('f-msg').value.trim();
+    if (!name || !email || !msg) {
+      alert('Por favor completa todos los campos.');
+      return;
+    }
+    const mailto = `mailto:tu@email.com?subject=Contacto desde portafolio — ${encodeURIComponent(name)}&body=${encodeURIComponent(msg + '\n\nDe: ' + name + '\nEmail: ' + email)}`;
+    window.location.href = mailto;
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+</script>
 </body>
 </html>
